@@ -1,9 +1,6 @@
 import speech_recognition as sr
-import pocketsphinx
-import random
-import time
 
-def recognize_speech_from_mic(recognizer, microphone):
+def recognize_speech_from_mic(recognizer, microphone, language):
     """Transcribe speech from recorded from `microphone`.
 
     Returns a dictionary with three keys:
@@ -39,7 +36,7 @@ def recognize_speech_from_mic(recognizer, microphone):
     # if a RequestError or UnknownValueError exception is caught,
     #     update the response object accordingly
     try:
-        response["transcription"] = recognizer.recognize_sphinx(audio)
+        response["transcription"] = recognizer.recognize_google(audio, language=language)
     except sr.RequestError:
         # API was unreachable or unresponsive
         response["success"] = False
