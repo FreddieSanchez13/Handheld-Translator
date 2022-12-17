@@ -39,7 +39,7 @@ while True:
         print("")
         print(f"\"{translation.origin}\" is \"{translation.text}\" in english.\n")
         translated = translation.text
-        speak(translated, lang)
+        speak(translated, "en")
 
     if tOrF == "from":
         print("")
