@@ -2,7 +2,6 @@ from googletrans import Translator, constants
 from pprint import pprint
 from recognition import recognize_speech_from_mic
 from textToSpeech import speak
-from translateToEnglish import translate_to_english
 import speech_recognition as sr
 
 
@@ -17,25 +16,29 @@ while True:
     tOrF.lower()
 
     if tOrF == "to":
+        print("")
         lang = input("What language would you like translated to English?\nEspañol(es)\nDeutsch(de)\nPortuguês(pt)\nItaliano(it)\nFrançais(fr)\n--> ")
+        
         PROMPT_LIMIT = 5
         for j in range(PROMPT_LIMIT):
             print("")
             print("What sentence would you like translated?\n")
-            sent = recognize_speech_from_mic(rawAudio, mic, lang)
-            if sent["transcription"]:
+            text = recognize_speech_from_mic(rawAudio, mic, lang)
+            if text["transcription"]:
                 break
-            if not sent["success"]:
+            if not text["success"]:
                 break
             print("I didn't catch that. What did you say?\n")
-        if sent["error"]:
-            print("ERROR: {}".format(sent["error"]))
+        if text["error"]:
+            print("ERROR: {}".format(text["error"]))
             break
-        print("The sentence you want translated is: {}".format(sent["transcription"]))
-        translation = translate_to_english(sent, lang)
-
-        print(f"\"{translation.origin}\" is \"{translation.text}\" in English.\n")
-        translated = translation.sent
+        print("The sentence you want translated is: {}".format(text["transcription"]))
+        sent = text["transcription"]
+        
+        translation = translator.translate(sent, src=lang, dest='en')
+        print("")
+        print(f"\"{translation.origin}\" is \"{translation.text}\" in english.\n")
+        translated = translation.text
         speak(translated, lang)
 
     if tOrF == "from":
