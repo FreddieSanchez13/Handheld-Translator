@@ -7,7 +7,7 @@ import speech_recognition as sr
 class Translator:
     def __init__(self, root):
         self.root = root
-        self.root.title("Translator")
+        self.root.title("Handheld Translator")
 
         # Set up the speech recognizer
         self.r = sr.Recognizer()
@@ -48,37 +48,66 @@ class Translator:
         output_language_menu = tk.OptionMenu(self.root, self.output_language_var, *self.LANGUAGES.keys())
         output_language_menu.pack()
 
+        # Create the text box for input text
+        input_text_label = tk.Label(self.root, text="Input Text:")
+        input_text_label.pack()
+        self.input_text_box = tk.Text(self.root, height=5, width=50)
+        self.input_text_box.pack()
+
+        # Create the text box for output text
+        output_text_label = tk.Label(self.root, text="Output Text:")
+        output_text_label.pack()
+        self.output_text_box = tk.Text(self.root, height=5, width=50)
+        self.output_text_box.pack()
+
+        # Create the speech recognition button
+        self.recognize_button = tk.Button(self.root, text="Recognize", command=self.speech_recognition)
+        self.recognize_button.pack()
+
         # Create the translate button
         self.translate_button = tk.Button(self.root, text="Translate", command=self.translate)
         self.translate_button.pack()
+
+        # Create the text-to-speech button
+        self.text_to_speech_button = tk.Button(self.root, text="Speak", command=self.text_to_speech)
+        self.text_to_speech_button.pack()
 
     def speech_recognition(self):
         # Use the speech recognizer to get the input text
         with sr.Microphone() as source:
             audio = self.r.listen(source)
         text = self.r.recognize_sphinx(audio)
-
-        return text
+        # Insert the input text into the input text box
+        self.input_text_box.delete('1.0', tk.END)
+        self.input_text_box.insert(tk.END, text)
 
     def translate(self):
-        # Use speech recognition to get the input text
-        text = self.speech_recognition()
-
         # Get the input and output languages from the dropdown menus
         input_lang = self.input_language_var.get()
         output_lang = self.output_language_var.get()
 
+        # Get the input text from the input text box
+        text = self.input_text_box.get('1.0', tk.END)
+
         # Use Translate-Shell to translate the text
-        translation = subprocess.check_output(['trans', f':{input_lang}', f':{output_lang}', text])
+        translation = subprocess.check_output(['wsl', 'trans', f':{input_lang}', f':{output_lang}', text])
         translation = translation.decode()
 
-        # Print the translated text to the console
-        print(translation)
-
-        # Speak the translated text
-        self.text_to_speech(translation)
+        # Insert the translation into the output text box
+        self.output_text_box.delete('1.0', tk.END)
+        self.output_text_box.insert(tk.END, translation)
 
     def text_to_speech(self, text):
+        # Get the output language from the dropdown menu
+        output_lang = self.output_language_var.get()
+
+        # Get the output text from the output text box
+        text = self.output_text_box.get('1.0', tk.END)
+
+        # Set the text-to-speech engine language
+        self.engine.setProperty('voice', f'{output_lang.lower()}')
+
+        # Speak the output text
         self.engine.say(text)
         self.engine.runAndWait()
 
