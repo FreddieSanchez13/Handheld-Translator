@@ -3,6 +3,7 @@ import tkinter as tk
 import pyttsx3
 import subprocess
 import speech_recognition as sr
+import re
 
 class Translator:
     def __init__(self, root):
@@ -90,12 +91,15 @@ class Translator:
         text = self.input_text_box.get('1.0', tk.END)
 
         # Use Translate-Shell to translate the text
-        translation = subprocess.check_output(['wsl', 'trans', f':{input_lang}', f':{output_lang}', text])
+        translation = subprocess.check_output(['wsl', 'trans', '-no-ansi', '-no-autocorrect', f':{input_lang}', f':{output_lang}', text])
         translation = translation.decode()
+
+        # Extract the translated text from the translation output
+        translated_text = re.search(r'\n\n([\s\S]*)\n\nTranslations', translation).group(1)
 
         # Insert the translation into the output text box
         self.output_text_box.delete('1.0', tk.END)
-        self.output_text_box.insert(tk.END, translation)
+        self.output_text_box.insert(tk.END, translated_text.strip())
 
     def text_to_speech(self, text):
         # Get the output language from the dropdown menu
