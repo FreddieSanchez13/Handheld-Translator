@@ -101,19 +101,20 @@ class Translator:
         self.output_text_box.delete('1.0', tk.END)
         self.output_text_box.insert(tk.END, translated_text.strip())
 
-    def text_to_speech(self, text):
+    def text_to_speech(self):
         # Get the output language from the dropdown menu
         output_lang = self.output_language_var.get()
 
         # Get the output text from the output text box
         text = self.output_text_box.get('1.0', tk.END)
 
-        # Set the text-to-speech engine language
-        self.engine.setProperty('voice', f'{output_lang.lower()}')
+        # Only speaks if there is text
+        if text.strip():
+            self.engine.setProperty('voice', f'{output_lang.lower()}')
 
-        # Speak the output text
-        self.engine.say(text)
-        self.engine.runAndWait()
+            # Speak the output text
+            self.engine.say(text)
+            self.engine.runAndWait()
 
 if __name__ == "__main__":
     root = tk.Tk()
