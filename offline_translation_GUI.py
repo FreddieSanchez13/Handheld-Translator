@@ -11,10 +11,10 @@ class Translator:
         self.root.title("Handheld Translator")
 
         # Set up the speech recognizer
-        self.r = sr.Recognizer()
-        with sr.Microphone() as source:
+        #self.r = sr.Recognizer()
+        #with sr.Microphone() as source:
             # Calibrate the recognizer
-            self.r.adjust_for_ambient_noise(source)
+            #self.r.adjust_for_ambient_noise(source)
 
         # Set up the text-to-speech engine
         self.engine = pyttsx3.init()
@@ -74,10 +74,15 @@ class Translator:
         self.text_to_speech_button.pack()
 
     def speech_recognition(self):
+        # Set up the speech recognizer
+        self.r = sr.Recognizer()
+
         # Use the speech recognizer to get the input text
         with sr.Microphone() as source:
             audio = self.r.listen(source)
+
         text = self.r.recognize_sphinx(audio)
+
         # Insert the input text into the input text box
         self.input_text_box.delete('1.0', tk.END)
         self.input_text_box.insert(tk.END, text)
